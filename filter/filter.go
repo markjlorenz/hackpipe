@@ -1,13 +1,11 @@
 package filter
 
 import (
-  "os"
   "os/exec"
+  "io/ioutil"
   "bytes"
   "fmt"
-  "time"
   "strings"
-  "strconv"
 )
 
 const NL string = "\n"
@@ -62,12 +60,17 @@ func (f *Filter) Filter(raw *bytes.Buffer, filtered *Filtered) {
   return
 }
 
-func (f *Filter) writeScriptFile() (filename string) {
-  filename = "/tmp/hackpipe:"+strconv.FormatInt(time.Now().UnixNano(), 10)
-  file, _ := os.Create(filename)
-  defer file.Close()
-  _, err := file.WriteString(f.script)
+func (f *Filter) writeScriptFile() string {
+  tmp, err := ioutil.TempFile("/tmp", "hackpipe:")
   if err != nil { panic(err) }
 
-  return
+  defer tmp.Close()
+  _, err  = tmp.WriteString(f.script)
+  if err != nil { panic(err) }
+
+  return tmp.Name()
 }
+//
+// func (f *Filter) setupSpecialFiles() {
+//   tmp, err := ioutil.TempFile("/tmp", "hackpipe:")
+// }
