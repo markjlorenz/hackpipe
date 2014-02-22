@@ -11,26 +11,54 @@ type Options struct {
   API     string
   Command string
   Auth    string
+  Host    string
+  Yolo    bool
   Headers []string
   Input   ioOptions
   Output  ioOptions
 }
 
+type ApiOptions map[string]ApiOption
+type ApiOption map[string]Options
+
 type ioOptions struct {
-  Endpoint string
-  Script   string
+  Path    string
+  Script  string
 }
 
-func (o *Options) Parse() {
+func Parse() (o *Options){
   // flag.Usage = usage
-  var api     string
-  var script  string
+  var api       string
+  var inScript  string
+  var outScript string
 
   flag.StringVar(&api, "a", api, "The API to access")
-  flag.StringVar(&script, "e", script, "A script to process the input/output")
+  flag.StringVar(&inScript, "i", inScript, "A script to process the input/output")
+  flag.StringVar(&outScript, "o", outScript, "A script to process the input/output")
   flag.Parse()
 
-  // load in the config file and apply it's settings
+  assertRequired(api)
+
+  rcBytes  := loadJSON()
+  fullOpts := unmarshalConfig(rcBytes)
+
+  op := (*fullOpts)["apis"][api]
+  o   = &op
+
+  // user overrides
+  if inScript  != "" { o.Input.Script  = inScript }
+  if outScript != "" { o.Output.Script = outScript }
+
+  return
+}
+
+func unmarshalConfig(data []byte) (options *ApiOptions) {
+  err := json.Unmarshal(data, &options)
+  if err != nil { panic(err) }
+  return
+}
+
+func loadJSON() []byte {
   rcFilename   := os.Getenv("HOME")+"/.hackpiperc"
   rcFile, noRc := os.Open(rcFilename)
   if noRc != nil { panic("a `$HOME/.hackpiperc` file is required.") }
@@ -39,18 +67,14 @@ func (o *Options) Parse() {
   rcBytes, err := ioutil.ReadAll(rcFile)
   if err != nil { panic(err) }
 
-  o = unmarshalConfig(rcBytes)
-
-  // user overrides
-  o.API           = api
-  o.Input.Script  = script
-  o.Output.Script = script
+  return rcBytes
 }
 
-func unmarshalConfig(data []byte) (options *Options) {
-  err := json.Unmarshal(data, &options)
-  if err != nil { panic(err) }
-  return
+func assertRequired(reqd string) {
+  if reqd == "" {
+    println("The -a option is requried")
+    os.Exit(1)
+  }
 }
 
 // func usage() {

@@ -13,14 +13,19 @@ import (
 )
 
 type Opts struct {
+  Command string
+  Script  string
 }
 
-func Pipe(opts *Opts) {
-  command  := "ruby -rjson"
-  script   := "j = JSON.parse(ARGF.read); j['description'] = j['description'].upcase; puts j.to_json"
-  raw      := new(bytes.Buffer)
-  filtered := new(bytes.Buffer)
-  response := new(bytes.Buffer)
+type Filtered struct {
+  bytes.Buffer
+}
+func (f *Filtered) Close() error { return nil }
+
+func Pipe(network *api.Input, opts *Opts) {
+  raw        := new(bytes.Buffer)
+  inFiltered := new(Filtered)
+  response   := new(bytes.Buffer)
 
   scanner := bufio.NewScanner(os.Stdin)
   for scanner.Scan() {
@@ -31,11 +36,17 @@ func Pipe(opts *Opts) {
     fmt.Fprintln(os.Stderr, "reading standard input:", err)
   }
 
-  filename := "/tmp/hackpipe:"+strconv.FormatInt(time.Now().UnixNano(), 10)
-  file, _ := os.Create(filename)
-  defer file.Close()
-  _, err := file.WriteString(script)
+  filterInput(opts.Command, opts.Script, raw, inFiltered)
+
+  res := network.Write(inFiltered)
+  _, err := response.ReadFrom(res)
   if err != nil { panic(err) }
+
+  fmt.Println(response)
+}
+
+func filterInput(command, script string, raw *bytes.Buffer, filtered *Filtered) {
+  filename := writeScriptFile(script)
 
   commands := strings.Fields(command)
   args     := append([]string{}, commands[1:]...)
@@ -48,8 +59,15 @@ func Pipe(opts *Opts) {
   if err != nil { fmt.Println(filtered); panic(err) }
 
   fmt.Fprint(filtered, string(scripted))
+  return
+}
 
-  res := api.NewInput(filtered)
-  _, err = response.ReadFrom(res)
-  fmt.Println(response)
+func writeScriptFile(script string) (filename string) {
+  filename = "/tmp/hackpipe:"+strconv.FormatInt(time.Now().UnixNano(), 10)
+  file, _ := os.Create(filename)
+  defer file.Close()
+  _, err := file.WriteString(script)
+  if err != nil { panic(err) }
+
+  return
 }

@@ -2,15 +2,27 @@ package main
 
 import (
   "dapplebeforedawn/hackpipe/write"
+  "dapplebeforedawn/hackpipe/api"
   "dapplebeforedawn/hackpipe/options"
+  // "fmt"
 )
 
 func main() {
-  opts := opts.Options{}
-  opts.Parse()
+  opts := opts.Parse()
 
-  writeOpts := &write.Opts{}
-  write.Pipe(writeOpts)
+  inputOpts := &api.InputOpts{
+    Path: opts.Input.Path,
+    Auth: opts.Auth,
+    Host: opts.Host,
+    Yolo: opts.Yolo,
+  }
+  input := api.NewInput(inputOpts)
+
+  writeOpts := &write.Opts{
+    Command: opts.Command,
+    Script:  opts.Input.Script,
+  }
+  write.Pipe(input, writeOpts)
 }
 
 // if stdin then we are in write mode:
