@@ -17,10 +17,11 @@ func main() {
 
 func writer(opts *opts.Options) {
   writeOpts := &api.Opts{
-    Path: opts.Input.Path,
-    Auth: opts.Auth,
-    Host: opts.Input.Host,
-    Yolo: opts.Yolo,
+    Path:    opts.Input.Path,
+    Auth:    opts.Auth,
+    Headers: opts.Headers,
+    Host:    opts.Input.Host,
+    Yolo:    opts.Yolo,
   }
   input := api.NewInput(writeOpts)
 
@@ -38,10 +39,11 @@ func reader(opts *opts.Options) {
   if opts.Output.Path == "" { return }
 
   readOpts := &api.Opts{
-    Path: opts.Output.Path,
-    Auth: opts.Auth,
-    Host: opts.Output.Host,
-    Yolo: opts.Yolo,
+    Path:    opts.Output.Path,
+    Auth:    opts.Auth,
+    Headers: opts.Headers,
+    Host:    opts.Output.Host,
+    Yolo:    opts.Yolo,
   }
   readable := api.NewOutput(readOpts)
 

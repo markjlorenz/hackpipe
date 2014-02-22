@@ -13,7 +13,7 @@ type Options struct {
   Auth    string
   Host    string
   Yolo    bool
-  Headers []string
+  Headers map[string]string
   Input   ioOptions
   Output  ioOptions
 }
