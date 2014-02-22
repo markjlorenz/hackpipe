@@ -1,7 +1,8 @@
 package main
 
 import (
-  // "dapplebeforedawn/hackpipe/write"
+  "dapplebeforedawn/hackpipe/write"
+  "dapplebeforedawn/hackpipe/read"
   "dapplebeforedawn/hackpipe/api"
   "dapplebeforedawn/hackpipe/options"
   "fmt"
@@ -10,25 +11,26 @@ import (
 func main() {
   opts := opts.Parse()
 
-  // inputOpts := &api.InputOpts{
-  //   Path: opts.Input.Path,
-  //   Auth: opts.Auth,
-  //   Host: opts.Host,
-  //   Yolo: opts.Yolo,
-  // }
-  // input := api.NewInput(inputOpts)
+  writeOpts := &api.Opts{
+    Path: opts.Input.Path,
+    Auth: opts.Auth,
+    Host: opts.Host,
+    Yolo: opts.Yolo,
+  }
+  input := api.NewInput(writeOpts)
 
-  // writeOpts := &write.Opts{
-  //   Command:   opts.Command,
-  //   InScript:  opts.Input.Script,
-  //   OutScript: opts.Output.Script,
-  // }
-  // afterWrite := write.Pipe(input, writeOpts)
+  inputOpts := &write.Opts{
+    Command:   opts.Command,
+    InScript:  opts.Input.Script,
+    OutScript: opts.Output.Script,
+  }
+  afterWrite := write.Pipe(input, inputOpts)
 
-  // fmt.Print(afterWrite)
+  fmt.Print(afterWrite)
 
+//-----------------------------------------------
   fmt.Println("READY")
-  readOpts := &api.OutputOpts{
+  readOpts := &api.Opts{
     Path: opts.Output.Path,
     Auth: opts.Auth,
     Host: opts.Host,
@@ -36,11 +38,14 @@ func main() {
   }
   readable := api.NewOutput(readOpts)
 
-  for {
-    line, err := readable.Reader.ReadString('\r')
-    if err != nil { panic(err) }
-    fmt.Println(line)
+  outputOpts := &read.Opts{
+    Command:   opts.Command,
+    InScript:  opts.Input.Script,
+    OutScript: opts.Output.Script,
   }
+  afterRead := read.Pipe(readable, outputOpts)
+
+  fmt.Print(afterRead)
 
 }
 

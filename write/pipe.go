@@ -2,14 +2,11 @@ package write
 
 import (
   "dapplebeforedawn/hackpipe/api"
+  "dapplebeforedawn/hackpipe/filter"
   "os"
-  "os/exec"
   "bufio"
   "bytes"
   "fmt"
-  "time"
-  "strings"
-  "strconv"
 )
 
 type Opts struct {
@@ -18,16 +15,13 @@ type Opts struct {
   OutScript string
 }
 
-type Filtered struct {
-  bytes.Buffer
-}
-func (f *Filtered) Close() error { return nil }
-
-func Pipe(network *api.Input, opts *Opts) *Filtered {
+func Pipe(network *api.Input, opts *Opts) *filter.Filtered {
   raw         := new(bytes.Buffer)
-  inFiltered  := new(Filtered)
-  outFiltered := new(Filtered)
+  inFiltered  := new(filter.Filtered)
+  outFiltered := new(filter.Filtered)
   response    := new(bytes.Buffer)
+  inFilter    := filter.NewFilter(opts.Command, opts.InScript)
+  outFilter   := filter.NewFilter(opts.Command, opts.OutScript)
 
   scanner := bufio.NewScanner(os.Stdin)
   for scanner.Scan() {
@@ -38,40 +32,13 @@ func Pipe(network *api.Input, opts *Opts) *Filtered {
     fmt.Fprintln(os.Stderr, "reading standard input:", err)
   }
 
-  filter(opts.Command, opts.InScript, raw, inFiltered)
+  inFilter.Filter(raw, inFiltered)
 
   res := network.Write(inFiltered)
   _, err := response.ReadFrom(res)
   if err != nil { panic(err) }
 
-  filter(opts.Command, opts.OutScript, response, outFiltered)
+  outFilter.Filter(response, outFiltered)
 
   return outFiltered
-}
-
-func filter(command, script string, raw *bytes.Buffer, filtered *Filtered) {
-  filename := writeScriptFile(script)
-
-  commands := strings.Fields(command)
-  args     := append([]string{}, commands[1:]...)
-  args      = append(args, filename)
-
-  cmd := exec.Command(commands[0], args...)
-  cmd.Stdin = raw
-
-  scripted, err := cmd.CombinedOutput()
-  if err != nil { fmt.Println(filtered); panic(err) }
-
-  fmt.Fprint(filtered, string(scripted))
-  return
-}
-
-func writeScriptFile(script string) (filename string) {
-  filename = "/tmp/hackpipe:"+strconv.FormatInt(time.Now().UnixNano(), 10)
-  file, _ := os.Create(filename)
-  defer file.Close()
-  _, err := file.WriteString(script)
-  if err != nil { panic(err) }
-
-  return
 }

@@ -2,14 +2,20 @@ package read
 
 import (
   "dapplebeforedawn/hackpipe/api"
-  // "os"
-  // "os/exec"
-  // "bufio"
-  // "bytes"
-  // "fmt"
-  // "time"
-  // "strings"
-  // "strconv"
+  "dapplebeforedawn/hackpipe/filter"
+  "fmt"
 )
 
-func Pipe(network *api.Input, opts *Opts) *Filtered {
+type Opts struct {
+  Command   string
+  InScript  string
+  OutScript string
+}
+
+func Pipe(network *api.Output, opts *Opts) *filter.Filtered {
+  for {
+    line, err := network.ReadString('\r')
+    if err != nil { panic(err) }
+    fmt.Println(line)
+  }
+}

@@ -5,8 +5,6 @@ import (
   "crypto/tls"
   "net/http"
   "fmt"
-
-  "bufio"
 )
 
 type Input struct {
@@ -14,14 +12,7 @@ type Input struct {
   req *http.Request
 }
 
-type InputOpts struct {
-  Path string
-  Auth string
-  Host string
-  Yolo bool
-}
-
-func NewInput(opts *InputOpts) (*Input) {
+func NewInput(opts *Opts) (*Input) {
   path := opts.Path
   auth := opts.Auth
   host := opts.Host
@@ -48,42 +39,4 @@ func (i *Input)Write(body io.ReadCloser) io.ReadCloser{
   if err != nil { fmt.Println(resp); panic(err) }
 
   return resp.Body
-}
-
-//--------------------------------
-type Output struct {
-  Reader *bufio.Reader
-}
-
-type OutputOpts struct {
-  Path string
-  Auth string
-  Host string
-  Yolo bool
-}
-
-func NewOutput(opts *OutputOpts) (*Output) {
-  path := opts.Path
-  auth := opts.Auth
-  host := opts.Host
-  yolo := opts.Yolo
-
-  req, err := http.NewRequest("GET", "https://"+host+path, nil)
-  if err != nil { fmt.Println(req); panic(err) }
-
-  req.Header.Add("Authorization", auth)
-
-  tr := &http.Transport{
-    TLSClientConfig: &tls.Config{InsecureSkipVerify: yolo},
-  }
-
-  client := &http.Client{Transport: tr}
-
-  // clientConn := httputil.NewClientConn(client)
-  resp, err := client.Do(req)
-  reader := bufio.NewReader(resp.Body)
-
-  return &Output{
-    Reader: reader,
-  }
 }
