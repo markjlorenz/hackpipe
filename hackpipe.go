@@ -1,7 +1,7 @@
 package main
 
 import (
-  "dapplebeforedawn/hackpipe/write"
+  // "dapplebeforedawn/hackpipe/write"
   "dapplebeforedawn/hackpipe/api"
   "dapplebeforedawn/hackpipe/options"
   "fmt"
@@ -10,22 +10,38 @@ import (
 func main() {
   opts := opts.Parse()
 
-  inputOpts := &api.InputOpts{
-    Path: opts.Input.Path,
+  // inputOpts := &api.InputOpts{
+  //   Path: opts.Input.Path,
+  //   Auth: opts.Auth,
+  //   Host: opts.Host,
+  //   Yolo: opts.Yolo,
+  // }
+  // input := api.NewInput(inputOpts)
+
+  // writeOpts := &write.Opts{
+  //   Command:   opts.Command,
+  //   InScript:  opts.Input.Script,
+  //   OutScript: opts.Output.Script,
+  // }
+  // afterWrite := write.Pipe(input, writeOpts)
+
+  // fmt.Print(afterWrite)
+
+  fmt.Println("READY")
+  readOpts := &api.OutputOpts{
+    Path: opts.Output.Path,
     Auth: opts.Auth,
     Host: opts.Host,
     Yolo: opts.Yolo,
   }
-  input := api.NewInput(inputOpts)
+  readable := api.NewOutput(readOpts)
 
-  writeOpts := &write.Opts{
-    Command:   opts.Command,
-    InScript:  opts.Input.Script,
-    OutScript: opts.Output.Script,
+  for {
+    line, err := readable.Reader.ReadString('\r')
+    if err != nil { panic(err) }
+    fmt.Println(line)
   }
-  afterWrite := write.Pipe(input, writeOpts)
 
-  fmt.Print(afterWrite)
 }
 
 // if stdin then we are in write mode:
