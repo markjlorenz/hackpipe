@@ -11,25 +11,15 @@ import (
 func main() {
   opts   := opts.Parse()
 
-  go writer(opts)
   go reader(opts)
-
-  select{ } //chill here for a while
-  // for {
-  //   select {
-  //   case w := <-writes:
-  //     println(w)
-  //   case r := <-reads:
-  //     println(r)
-  //   }
-  // }
+  writer(opts)
 }
 
 func writer(opts *opts.Options) {
   writeOpts := &api.Opts{
     Path: opts.Input.Path,
     Auth: opts.Auth,
-    Host: opts.Host,
+    Host: opts.Input.Host,
     Yolo: opts.Yolo,
   }
   input := api.NewInput(writeOpts)
@@ -45,10 +35,12 @@ func writer(opts *opts.Options) {
 }
 
 func reader(opts *opts.Options) {
+  if opts.Output.Path == "" { return }
+
   readOpts := &api.Opts{
     Path: opts.Output.Path,
     Auth: opts.Auth,
-    Host: opts.Host,
+    Host: opts.Output.Host,
     Yolo: opts.Yolo,
   }
   readable := api.NewOutput(readOpts)

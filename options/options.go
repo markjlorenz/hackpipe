@@ -22,6 +22,7 @@ type ApiOptions map[string]ApiOption
 type ApiOption map[string]Options
 
 type ioOptions struct {
+  Host    string // overrides the top level host
   Path    string
   Script  string
 }
@@ -44,6 +45,9 @@ func Parse() (o *Options){
 
   op := (*fullOpts)["apis"][api]
   o   = &op
+
+  if o.Input.Host  == "" { o.Input.Host  = o.Host }
+  if o.Output.Host == "" { o.Output.Host = o.Host }
 
   // user overrides
   if inScript  != "" { o.Input.Script  = inScript }

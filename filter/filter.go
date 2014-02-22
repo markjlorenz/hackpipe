@@ -20,7 +20,20 @@ type Filter struct {
   script  string
 }
 
-func NewFilter(command, script string) *Filter {
+type NullFilter struct { }
+func (f *NullFilter) Filter(raw *bytes.Buffer, filtered *Filtered) {
+  filtered.ReadFrom(raw)
+}
+
+type Filterable interface {
+  Filter(raw *bytes.Buffer, filtered *Filtered)
+}
+
+func NewFilter(command, script string) Filterable {
+  if command == "" || script == "" {
+    return &NullFilter{}
+  }
+
   return &Filter {
     command: command,
     script:  script,
@@ -38,7 +51,7 @@ func (f *Filter) Filter(raw *bytes.Buffer, filtered *Filtered) {
   cmd.Stdin = raw
 
   scripted, err := cmd.CombinedOutput()
-  if err != nil { fmt.Println(filtered); panic(err) }
+  if err != nil { fmt.Println(string(scripted)); panic(err) }
 
   fmt.Fprint(filtered, string(scripted))
   return
