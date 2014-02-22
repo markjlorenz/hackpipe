@@ -9,8 +9,23 @@ import (
 )
 
 func main() {
-  opts := opts.Parse()
+  opts   := opts.Parse()
 
+  go writer(opts)
+  go reader(opts)
+
+  select{ } //chill here for a while
+  // for {
+  //   select {
+  //   case w := <-writes:
+  //     println(w)
+  //   case r := <-reads:
+  //     println(r)
+  //   }
+  // }
+}
+
+func writer(opts *opts.Options) {
   writeOpts := &api.Opts{
     Path: opts.Input.Path,
     Auth: opts.Auth,
@@ -27,9 +42,9 @@ func main() {
   afterWrite := write.Pipe(input, inputOpts)
 
   fmt.Print(afterWrite)
+}
 
-//-----------------------------------------------
-  fmt.Println("READY")
+func reader(opts *opts.Options) {
   readOpts := &api.Opts{
     Path: opts.Output.Path,
     Auth: opts.Auth,
@@ -46,27 +61,4 @@ func main() {
   afterRead := read.Pipe(readable, outputOpts)
 
   fmt.Print(afterRead)
-
 }
-
-// if stdin then we are in write mode:
-  // pass each line through the input script
-  // POST to the endpoint
-
-// when in read mode:
-  // connect to the endpoint
-  // start getting data
-  // pass each ??? through the output script
-
-// CONFIG FILE:
-  // - api abbreviation flag
-  // - authorization header value
-  // - any other header k/v pairs
-  // - script runner command
-  //
-  // - api input:
-  //   - endpoint
-  //   - script (line oriented) [ or use -e option ]
-  // - api output:
-  //   - endpoint
-  //   - script (message oriented) [ or use -e option ]
