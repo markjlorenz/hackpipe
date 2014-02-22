@@ -4,7 +4,7 @@ import (
   "dapplebeforedawn/hackpipe/write"
   "dapplebeforedawn/hackpipe/api"
   "dapplebeforedawn/hackpipe/options"
-  // "fmt"
+  "fmt"
 )
 
 func main() {
@@ -19,10 +19,13 @@ func main() {
   input := api.NewInput(inputOpts)
 
   writeOpts := &write.Opts{
-    Command: opts.Command,
-    Script:  opts.Input.Script,
+    Command:   opts.Command,
+    InScript:  opts.Input.Script,
+    OutScript: opts.Output.Script,
   }
-  write.Pipe(input, writeOpts)
+  afterWrite := write.Pipe(input, writeOpts)
+
+  fmt.Print(afterWrite)
 }
 
 // if stdin then we are in write mode:

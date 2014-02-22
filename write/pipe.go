@@ -13,8 +13,9 @@ import (
 )
 
 type Opts struct {
-  Command string
-  Script  string
+  Command   string
+  InScript  string
+  OutScript string
 }
 
 type Filtered struct {
@@ -22,10 +23,11 @@ type Filtered struct {
 }
 func (f *Filtered) Close() error { return nil }
 
-func Pipe(network *api.Input, opts *Opts) {
-  raw        := new(bytes.Buffer)
-  inFiltered := new(Filtered)
-  response   := new(bytes.Buffer)
+func Pipe(network *api.Input, opts *Opts) *Filtered {
+  raw         := new(bytes.Buffer)
+  inFiltered  := new(Filtered)
+  outFiltered := new(Filtered)
+  response    := new(bytes.Buffer)
 
   scanner := bufio.NewScanner(os.Stdin)
   for scanner.Scan() {
@@ -36,16 +38,18 @@ func Pipe(network *api.Input, opts *Opts) {
     fmt.Fprintln(os.Stderr, "reading standard input:", err)
   }
 
-  filterInput(opts.Command, opts.Script, raw, inFiltered)
+  filter(opts.Command, opts.InScript, raw, inFiltered)
 
   res := network.Write(inFiltered)
   _, err := response.ReadFrom(res)
   if err != nil { panic(err) }
 
-  fmt.Println(response)
+  filter(opts.Command, opts.OutScript, response, outFiltered)
+
+  return outFiltered
 }
 
-func filterInput(command, script string, raw *bytes.Buffer, filtered *Filtered) {
+func filter(command, script string, raw *bytes.Buffer, filtered *Filtered) {
   filename := writeScriptFile(script)
 
   commands := strings.Fields(command)
