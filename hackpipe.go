@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-  opts   := opts.Parse()
+  opts := opts.Parse()
 
   go reader(opts)
   writer(opts)
@@ -36,6 +36,7 @@ func writer(opts *opts.Options) {
 }
 
 func reader(opts *opts.Options) {
+  // if no streaming endpoint configured, don't do anthing.
   if opts.Output.Path == "" { return }
 
   readOpts := &api.Opts{
@@ -49,10 +50,8 @@ func reader(opts *opts.Options) {
 
   outputOpts := &read.Opts{
     Command:   opts.Command,
-    InScript:  opts.Input.Script,
     OutScript: opts.Output.Script,
   }
-  afterRead := read.Pipe(readable, outputOpts)
 
-  fmt.Print(afterRead)
+  read.Pipe(readable, outputOpts)
 }

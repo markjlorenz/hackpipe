@@ -30,6 +30,7 @@ type Filterable interface {
 }
 
 func NewFilter(command, script string) Filterable {
+  // if we can't filter, don't try.
   if command == "" || script == "" {
     return &NullFilter{}
   }
