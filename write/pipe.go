@@ -10,7 +10,7 @@ import (
 )
 
 type Opts struct {
-  Command   string
+  Runner    string
   InScript  string
   OutScript string
 }
@@ -20,8 +20,8 @@ func Pipe(network *api.Input, opts *Opts) *filter.Filtered {
   inFiltered  := new(filter.Filtered)
   outFiltered := new(filter.Filtered)
   response    := new(bytes.Buffer)
-  inFilter    := filter.NewFilter(opts.Command, opts.InScript)
-  outFilter   := filter.NewFilter(opts.Command, opts.OutScript)
+  inFilter    := filter.NewFilter(opts.Runner, opts.InScript)
+  outFilter   := filter.NewFilter(opts.Runner, opts.OutScript)
 
   scanner := bufio.NewScanner(os.Stdin)
   for scanner.Scan() {

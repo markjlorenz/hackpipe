@@ -9,7 +9,7 @@ import (
 
 type Options struct {
   API     string
-  Command string
+  Runner  string
   Auth    string
   Host    string
   Yolo    bool
@@ -32,10 +32,12 @@ func Parse() (o *Options){
   var api       string
   var inScript  string
   var outScript string
+  var runner    string
 
   flag.StringVar(&api, "a", api, "The API to access")
-  flag.StringVar(&inScript, "i", inScript, "A script to process the input/output")
-  flag.StringVar(&outScript, "o", outScript, "A script to process the input/output")
+  flag.StringVar(&inScript, "i", inScript, "A script to pre-process the api input")
+  flag.StringVar(&outScript, "o", outScript, "A script to process the api output")
+  flag.StringVar(&runner, "r", runner, "The program that runs your scripts.  The data will be availble on STDIN.")
   flag.Parse()
 
   assertRequired(api)
@@ -52,6 +54,7 @@ func Parse() (o *Options){
   // user overrides
   if inScript  != "" { o.Input.Script  = inScript }
   if outScript != "" { o.Output.Script = outScript }
+  if runner    != "" { o.Runner        = runner }
 
   return
 }

@@ -4,24 +4,27 @@ import (
   "dapplebeforedawn/hackpipe/api"
   "dapplebeforedawn/hackpipe/filter"
   "bytes"
-  "fmt"
 )
 
+const RL byte = '\r'
+
 type Opts struct {
-  Command   string
+  Runner    string
   OutScript string
 }
 
-func Pipe(network *api.Output, opts *Opts) {
-  outFilter := filter.NewFilter(opts.Command, opts.OutScript)
-  filtered  := new(filter.Filtered)
+type Callback func(...interface {}) (int, error) // matches fmt.Print
+
+func Pipe(network *api.Output, opts *Opts, cb Callback) {
+  outFilter := filter.NewFilter(opts.Runner, opts.OutScript)
 
   for {
-    line, err := network.ReadString('\r')
+    line, err := network.ReadString(RL)
     if err != nil { panic(err) }
 
     lineBuffer := bytes.NewBuffer([]byte(line))
+    filtered   := new(filter.Filtered)
     outFilter.Filter(lineBuffer, filtered)
-    fmt.Print(filtered)
+    cb( filtered.String() )
   }
 }

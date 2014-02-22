@@ -10,14 +10,16 @@ import (
   "strconv"
 )
 
+const NL string = "\n"
+
 type Filtered struct {
   bytes.Buffer
 }
 func (f *Filtered) Close() error { return nil }
 
 type Filter struct {
-  command string
-  script  string
+  runner string
+  script string
 }
 
 type NullFilter struct { }
@@ -29,22 +31,22 @@ type Filterable interface {
   Filter(raw *bytes.Buffer, filtered *Filtered)
 }
 
-func NewFilter(command, script string) Filterable {
+func NewFilter(runner, script string) Filterable {
   // if we can't filter, don't try.
-  if command == "" || script == "" {
+  if runner == "" || script == "" {
     return &NullFilter{}
   }
 
   return &Filter {
-    command: command,
-    script:  script,
+    runner: runner,
+    script: script,
   }
 }
 
 func (f *Filter) Filter(raw *bytes.Buffer, filtered *Filtered) {
   filename := f.writeScriptFile()
 
-  commands := strings.Fields(f.command)
+  commands := strings.Fields(f.runner)
   args     := append([]string{}, commands[1:]...)
   args      = append(args, filename)
 
@@ -54,7 +56,9 @@ func (f *Filter) Filter(raw *bytes.Buffer, filtered *Filtered) {
   scripted, err := cmd.CombinedOutput()
   if err != nil { fmt.Println(string(scripted)); panic(err) }
 
-  fmt.Fprint(filtered, string(scripted))
+  noTrailing := strings.TrimSuffix(string(scripted), NL)
+
+  fmt.Fprint(filtered, noTrailing)
   return
 }
 
