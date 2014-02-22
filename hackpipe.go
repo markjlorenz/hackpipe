@@ -2,9 +2,13 @@ package main
 
 import (
   "dapplebeforedawn/hackpipe/write"
+  "dapplebeforedawn/hackpipe/options"
 )
 
 func main() {
+  opts := opts.Options{}
+  opts.Parse()
+
   writeOpts := &write.Opts{}
   write.Pipe(writeOpts)
 }
