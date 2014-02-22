@@ -22,6 +22,6 @@ func Pipe(network *api.Output, opts *Opts) {
 
     lineBuffer := bytes.NewBuffer([]byte(line))
     outFilter.Filter(lineBuffer, filtered)
-    fmt.Println(filtered)
+    fmt.Print(filtered)
   }
 }
