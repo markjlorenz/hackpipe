@@ -5,7 +5,9 @@
 There is a sample `~/.hackpiperc` included in the `sample` directory.  This should give you a really good overview of what configuration options are availbe to you.
 
 ## Examples
+These examples assume you are using the sample `.hackpiperc`
 
+----
 Read from the campfire stream:
 ```
 hackpipe -a=c
@@ -16,9 +18,10 @@ Post a message to campfire:
 echo "Hi Mark!" | hackpipe -a=c
 ```
 
-Post a Gist to github:
+----
+Post a Gist to github, and filter the URL only out of the response:
 ```
-hackpipe < test/github.json -a=g
+hackpipe < test/github.json -a=g -o='puts JSON.parse(ARGF.read)["url"]'
 ```
 
 [test/github.json]
@@ -34,7 +37,8 @@ hackpipe < test/github.json -a=g
 }
 ```
 
-Override your .hackpiperc:
+----
+Commandline args override the .hackpiperc:
 ```
 hackpipe -a=c -r='node' -o='
 process.stdin.on("readable", function(chunk){
@@ -45,7 +49,8 @@ process.stdin.on("readable", function(chunk){
 '
 ```
 
-The pre-input script can modify the request by writing to some special files that are accessible through enviroment varables.
+----
+The input script can modify the request by writing to some special files that are accessible through enviroment varables.
 
 Using the query string global variable:
 ```
