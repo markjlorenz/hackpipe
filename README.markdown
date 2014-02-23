@@ -6,7 +6,7 @@
 
 ## Installation
  - Put `bin/hackpipe` into a directory that's in your PATH.
- - Copy `samples/.hackpiperc` to `$HOME/.hackpiperc` and modify it for your APIS
+ - Copy `samples/.hackpiperc` to `$HOME/.hackpiperc` and modify it for your APIs
 
 ## `~/.hackpiperc`
 There is a sample `~/.hackpiperc` included in the `sample` directory.  This should give you a really good overview of what configuration options are availbe to you.
