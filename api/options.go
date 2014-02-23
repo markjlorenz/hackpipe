@@ -5,5 +5,7 @@ type Opts struct {
   Auth    string
   Headers map[string]string
   Host    string
+  Query   string
+  Method  string
   Yolo    bool
 }

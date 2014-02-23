@@ -32,13 +32,13 @@ func Pipe(network *api.Input, opts *Opts) *filter.Filtered {
     fmt.Fprintln(os.Stderr, "reading standard input:", err)
   }
 
-  inFilter.Filter(raw, inFiltered)
+  inFilter.Filter(raw, inFiltered, network.Request)
 
   res := network.Write(inFiltered)
   _, err := response.ReadFrom(res)
   if err != nil { panic(err) }
 
-  outFilter.Filter(response, outFiltered)
+  outFilter.Filter(response, outFiltered, nil)
 
   return outFiltered
 }

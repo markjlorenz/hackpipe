@@ -9,17 +9,19 @@ import (
 
 type Input struct {
   client *http.Client
-  req *http.Request
+  Request *http.Request
 }
 
 func NewInput(opts *Opts) (*Input) {
-  path := opts.Path
-  auth := opts.Auth
-  host := opts.Host
-  yolo := opts.Yolo
-  head := opts.Headers
+  path  := opts.Path
+  auth  := opts.Auth
+  host  := opts.Host
+  yolo  := opts.Yolo
+  head  := opts.Headers
+  meth  := opts.Method
+  query := opts.Query
 
-  req, err := http.NewRequest("POST", "https://"+host+path, nil)
+  req, err := http.NewRequest(meth, "https://"+host+path, nil)
   if err != nil { fmt.Println(req); panic(err) }
 
   req.Header.Add("Authorization", auth)
@@ -28,19 +30,21 @@ func NewInput(opts *Opts) (*Input) {
     req.Header.Add(key, value)
   }
 
+  req.URL.RawQuery = query
+
   tr := &http.Transport{
     TLSClientConfig: &tls.Config{InsecureSkipVerify: yolo},
   }
 
   return &Input{
     client: &http.Client{Transport: tr},
-    req: req,
+    Request: req,
   }
 }
 
 func (i *Input)Write(body io.ReadCloser) io.ReadCloser{
-  i.req.Body = body
-  resp, err := i.client.Do(i.req)
+  i.Request.Body = body
+  resp, err := i.client.Do(i.Request)
   if err != nil { fmt.Println(resp); panic(err) }
 
   return resp.Body

@@ -24,7 +24,7 @@ func Pipe(network *api.Output, opts *Opts, cb Callback) {
 
     lineBuffer := bytes.NewBuffer([]byte(line))
     filtered   := new(filter.Filtered)
-    outFilter.Filter(lineBuffer, filtered)
+    outFilter.Filter(lineBuffer, filtered, nil)
     cb( filtered.String() )
   }
 }

@@ -7,6 +7,9 @@ import (
   "encoding/json"
 )
 
+type ApiOptions map[string]ApiOption
+type ApiOption map[string]Options
+
 type Options struct {
   API     string
   Runner  string
@@ -18,12 +21,11 @@ type Options struct {
   Output  ioOptions
 }
 
-type ApiOptions map[string]ApiOption
-type ApiOption map[string]Options
-
 type ioOptions struct {
   Host    string // overrides the top level host
   Path    string
+  Query   string
+  Method  string
   Script  string
 }
 
@@ -48,6 +50,10 @@ func Parse() (o *Options){
   op := (*fullOpts)["apis"][api]
   o   = &op
 
+  // defaults
+  if o.Input.Method == "" { o.Input.Method = "POST" }
+
+  // shadowing
   if o.Input.Host  == "" { o.Input.Host  = o.Host }
   if o.Output.Host == "" { o.Output.Host = o.Host }
 

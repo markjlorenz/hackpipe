@@ -20,6 +20,8 @@ func writer(opts *opts.Options) {
     Path:    opts.Input.Path,
     Auth:    opts.Auth,
     Headers: opts.Headers,
+    Query:   opts.Input.Query,
+    Method:  opts.Input.Method,
     Host:    opts.Input.Host,
     Yolo:    opts.Yolo,
   }
