@@ -1,4 +1,4 @@
-# Hack|Pipe
+# Hackpipe
 > A unix pipe like interace for REST and streaming HTTP APIs.
 
 ## TL;DR
