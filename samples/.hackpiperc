@@ -1,13 +1,12 @@
 {
   "apis": {
 
-     "g": {
+     "github": {
        "auth": "Basic Nzc5ZDQ3Mzg2MjI0ZmZkODBlYTI5OWRkMzNjYzl<redacted>
       ,"headers": {
         "Content-Type": "application/json"
       }
       ,"host": "api.github.com"
-      ,"yolo": false
       ,"runner": "ruby -rjson"
 
       ,"input": {
@@ -20,7 +19,7 @@
       }
     }
 
-    ,"c": {
+    ,"campfire": {
        "auth": "Basic YmE5NmYwYjZmMmNlYjk0MWRkZWFiYTg5YTJ<redacted>"
       ,"headers": {
         "Content-Type": "application/json"
@@ -54,11 +53,10 @@
       }
     }
 
-    ,"cmm": {
+    ,"covermymeds": {
        "auth": "Basic YW55LWFwaS1pZDpkb2VzbnQtbWF0dGVy"
-      ,"host": "staging.api.covermymeds.com"
+      ,"host": "api.covermymeds.com"
       ,"runner": "ruby -rjson"
-      ,"yolo": true
       ,"input": {
          "path": "/drugs"
         ,"query": "v=1"

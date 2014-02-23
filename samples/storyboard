@@ -1,0 +1,33 @@
+# HackPipe
+
+Working with REST via pipes:
+
+## Creating a Gist:
+```bash
+cat test/github.json
+hackpipe < test/github.json -a=github
+```
+
+## Input Filters
+```bash
+echo 'Hello World' | hackpipe -a=github -i='
+  puts Hash[ description: "intro", files: { "file1.txt" => { content: ARGF.read } } ].to_json
+'
+```
+
+## Output Filters
+```bash
+hackpipe < test/github.json -a=github -o='
+  puts JSON.parse(ARGF.read)["url"]
+'
+```
+
+
+## Works with Streaming APIs (e.g. Campfire/Twitter)
+```bash
+hackpipe -a=campfire
+```
+
+---
+- Add more APIs and default filters in your `~/.hackpiperc`
+- More at:  github.com/dapplebeforedawn/hackpipe
