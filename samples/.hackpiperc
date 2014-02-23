@@ -1,6 +1,6 @@
-
 {
   "apis": {
+
      "g": {
        "auth": "Basic Nzc5ZDQ3Mzg2MjI0ZmZkODBlYTI5OWRkMzNjYzl<redacted>
       ,"headers": {
@@ -37,5 +37,35 @@
         ,"script": "puts ARGF.read.upcase"
       }
     }
+
+    ,"bin": {
+       "auth": "Basic YW55LWFwaS1pZDpkb2VzbnQtbWF0dGVy"
+      ,"host": "thawing-hollows-6255.herokuapp.com"
+      ,"runner": "ruby -rjson"
+      ,"yolo": true
+      ,"input": {
+         "path": "/14qedeo1"
+        ,"query": "v=1"
+        ,"method": "GET"
+        ,"script": "File.open(ENV['QUERY'], 'a') { |q| q  << '&q=caremark&drug_id=001002' }"
+      }
+      ,"output": {
+         "script": "puts ARGF.read.upcase"
+      }
+    }
+
+    ,"cmm": {
+       "auth": "Basic YW55LWFwaS1pZDpkb2VzbnQtbWF0dGVy"
+      ,"host": "staging.api.covermymeds.com"
+      ,"runner": "ruby -rjson"
+      ,"yolo": true
+      ,"input": {
+         "path": "/drugs"
+        ,"query": "v=1"
+        ,"method": "GET"
+        ,"script": "File.open(ENV['QUERY'], 'a') { |q| q  << '&q=marinol' }"
+      }
+    }
+
   }
 }
