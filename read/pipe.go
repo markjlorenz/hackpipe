@@ -16,7 +16,7 @@ type Opts struct {
 type Callback func(...interface {}) (int, error) // matches fmt.Print
 
 func Pipe(network *api.Output, opts *Opts, cb Callback) {
-  outFilter := filter.NewFilter(opts.Runner, opts.OutScript)
+  outFilter := filter.NewOutputFilter(opts.Runner, opts.OutScript)
 
   for {
     line, err := network.ReadString(RL)
@@ -24,7 +24,7 @@ func Pipe(network *api.Output, opts *Opts, cb Callback) {
 
     lineBuffer := bytes.NewBuffer([]byte(line))
     filtered   := new(filter.Filtered)
-    outFilter.Filter(lineBuffer, filtered, nil)
+    outFilter.Run(lineBuffer, filtered)
     cb( filtered.String() )
   }
 }

@@ -6,73 +6,57 @@ import (
   "bytes"
   "fmt"
   "strings"
-  "net/http"
-  "os"
 )
 
 const NL string = "\n"
+const PREFIX string = "hackpipe:"
 
 type Filtered struct {
   bytes.Buffer
 }
 func (f *Filtered) Close() error { return nil }
 
-type Filter struct {
-  runner    string
-  script    string
-  queryFile string
-}
-
 type NullFilter struct { }
-func (f *NullFilter) Filter(raw *bytes.Buffer, filtered *Filtered, req *http.Request) {
+func (f *NullFilter) Run(raw *bytes.Buffer, filtered *Filtered) {
   filtered.ReadFrom(raw)
 }
 
 type Filterable interface {
-  Filter(raw *bytes.Buffer, filtered *Filtered, req *http.Request)
+  Run(raw *bytes.Buffer, filtered *Filtered)
 }
 
-func NewFilter(runner, script string) Filterable {
-  // if we can't filter, don't try.
-  if runner == "" || script == "" {
-    return &NullFilter{}
-  }
-
-  return &Filter {
-    runner: runner,
-    script: script,
-  }
+type Filter struct {
+  runner    string
+  script    string
 }
 
-func (f *Filter) Filter(raw *bytes.Buffer, filtered *Filtered, req *http.Request) {
+func (f *Filter) getCommand(raw *bytes.Buffer) (cmd *exec.Cmd) {
   filename := f.writeScriptFile()
 
   commands := strings.Fields(f.runner)
   args     := append([]string{}, commands[1:]...)
   args      = append(args, filename)
 
-  cmd := exec.Command(commands[0], args...)
+  cmd = exec.Command(commands[0], args...)
   cmd.Stdin = raw
 
-  if req != nil {
-    f.setupSpecialFiles(cmd, req)
-  }
-
-  scripted, err := cmd.CombinedOutput()
-  if err != nil { fmt.Println(string(scripted)); panic(err) }
-
-  if req !=nil {
-    f.updateQuery(req)
-  }
-
-  noTrailing := strings.TrimSuffix(string(scripted), NL)
-
-  fmt.Fprint(filtered, noTrailing)
   return
 }
 
+func (f *Filter) runCommand(cmd *exec.Cmd) (scripted []byte){
+  scripted, err := cmd.CombinedOutput()
+  if err != nil { fmt.Println(string(scripted)); panic(err) }
+
+  return scripted
+}
+
+func (f *Filter) writeResult(scripted []byte, filtered *Filtered) {
+  noTrailing := strings.TrimSuffix(string(scripted), NL)
+  fmt.Fprint(filtered, noTrailing)
+}
+
 func (f *Filter) writeScriptFile() string {
-  tmp, err := ioutil.TempFile("", "hackpipe:")
+  tmp, err := ioutil.TempFile("", PREFIX)
   if err != nil { panic(err) }
 
   defer tmp.Close()
@@ -80,37 +64,4 @@ func (f *Filter) writeScriptFile() string {
   if err != nil { panic(err) }
 
   return tmp.Name()
-}
-
-func (f *Filter) setupSpecialFiles(cmd *exec.Cmd, req *http.Request) {
-  query, err := ioutil.TempFile("", "hackpipe:")
-  if err != nil { panic(err) }
-  defer query.Close()
-
-  f.queryFile = query.Name()
-
-  _, err = query.WriteString(req.URL.RawQuery)
-  if err != nil { panic(err) }
-
-  // make the query file available
-  // The just come in as FD3 to FD<3+num files>
-  // cmd.ExtraFiles = []*os.File{
-  //   query,
-  // }
-
-  // set convenience ENV to the descriptors
-  cmd.Env = []string{
-    "QUERY="+query.Name(),
-  }
-}
-
-func (f *Filter) updateQuery(req *http.Request) {
-  x := f.queryFile
-  queryFile, err :=  os.Open(x)
-  if err != nil { panic(err) }
-
-  queryBytes, err :=  ioutil.ReadAll(queryFile)
-  if err != nil { panic(err) }
-
-  req.URL.RawQuery = string(queryBytes)
 }

@@ -20,8 +20,8 @@ func Pipe(network *api.Input, opts *Opts) *filter.Filtered {
   inFiltered  := new(filter.Filtered)
   outFiltered := new(filter.Filtered)
   response    := new(bytes.Buffer)
-  inFilter    := filter.NewFilter(opts.Runner, opts.InScript)
-  outFilter   := filter.NewFilter(opts.Runner, opts.OutScript)
+  inFilter    := filter.NewInputFilter(opts.Runner, opts.InScript, network.Request)
+  outFilter   := filter.NewOutputFilter(opts.Runner, opts.OutScript)
 
   scanner := bufio.NewScanner(os.Stdin)
   for scanner.Scan() {
@@ -32,13 +32,13 @@ func Pipe(network *api.Input, opts *Opts) *filter.Filtered {
     fmt.Fprintln(os.Stderr, "reading standard input:", err)
   }
 
-  inFilter.Filter(raw, inFiltered, network.Request)
+  inFilter.Run(raw, inFiltered)
 
   res := network.Write(inFiltered)
   _, err := response.ReadFrom(res)
   if err != nil { panic(err) }
 
-  outFilter.Filter(response, outFiltered, nil)
+  outFilter.Run(response, outFiltered)
 
   return outFiltered
 }
