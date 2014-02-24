@@ -1,4 +1,4 @@
-# Hack|Pipe
+# Hackpipe
 > A unix pipe like interace for REST and streaming HTTP APIs.
 
 ## TL;DR
@@ -6,7 +6,7 @@
 
 ## Installation
  - Put `bin/hackpipe` into a directory that's in your PATH.
- - Copy `samples/.hackpiperc` to `$HOME/.hackpiperc` and modify it for your APIS
+ - Copy `samples/.hackpiperc` to `$HOME/.hackpiperc` and modify it for your APIs
 
 ## `~/.hackpiperc`
 There is a sample `~/.hackpiperc` included in the `sample` directory.  This should give you a really good overview of what configuration options are availbe to you.
@@ -47,7 +47,7 @@ hackpipe < test/github.json -a=github -o='puts JSON.parse(ARGF.read)["url"]'
 ----
 Commandline args override the .hackpiperc:
 ```bash
-hackpipe -a=c -r='node' -o='
+hackpipe -a=campfire -r='node' -o='
 process.stdin.on("readable", function(chunk){
     chunk = process.stdin.read();
     if(!chunk){ return };
@@ -63,7 +63,7 @@ Using the query string global variable:
 ```bash
 # the sample .hackpiperc file sets some common query string values for us
 # we want to append a few more
-hackpipe -a=cmm -e="File.open(ENV['QUERY'], 'a') { |q| q  << '&q=ambien' }"
+hackpipe -a=cmm -e="File.open(ENV['QUERY'], 'a') { |q| q  << '&q=marinol' }"
 # press ^D, we don't have any stdin to provide
 ```
 
