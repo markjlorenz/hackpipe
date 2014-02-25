@@ -1,0 +1,30 @@
+#! /usr/bin/env ruby -rjson
+
+# If the first line of input says "paste" then
+# set the message types as "PasteMessage", so campfire
+# uses a monospaced font. Otherwise, just use the
+# default "TextMessage" type.
+#
+# Usage: echo "some message" | hackpipe -ri=samples/complex_runner -a=campfire
+# Says:  "some message"
+#
+# Usage:  echo -e "paste\nsome message" | hackpipe -ri=samples/complex_runner -a=campfire
+# Pastes: "some message"
+
+lines        = STDIN.readlines
+message_type = "TextMessage"
+
+if lines.first =~ /^paste/i
+  message_type = "PasteMessage"
+  lines.delete_at(0)
+end
+
+ready_for_campfire =
+  { message:
+    {
+      type: message_type,
+      body: lines.join,
+    },
+  }
+
+puts ready_for_campfire.to_json

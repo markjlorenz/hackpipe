@@ -28,7 +28,8 @@ func writer(opts *opts.Options) {
   input := api.NewInput(writeOpts)
 
   inputOpts := &write.Opts{
-    Runner:    opts.Runner,
+    InRunner:  opts.Input.Runner,
+    OutRunner: opts.Output.Runner,
     InScript:  opts.Input.Script,
     OutScript: opts.Output.Script,
   }
@@ -51,7 +52,7 @@ func reader(opts *opts.Options) {
   readable := api.NewOutput(readOpts)
 
   outputOpts := &read.Opts{
-    Runner:    opts.Runner,
+    Runner:    opts.Output.Runner,
     OutScript: opts.Output.Script,
   }
 

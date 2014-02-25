@@ -9,7 +9,7 @@ apis:
       path: "/gists"
       script: "j = JSON.parse(ARGF.read); j['description'] = j['description'].upcase; puts j.to_json"
     output:
-      script: "j = JSON.parse(ARGF.read); puts j['url']"
+      script: "puts JSON.parse(ARGF.read)['url']"
 
   campfire:
     auth: "Basic YmE5NmYwYjZmMmNlYjk0MWRkZWFiYTg5YTJ<redacted>"
@@ -20,7 +20,7 @@ apis:
     input:
       host: "innovapartners.campfirenow.com"
       path: "/room/569461/speak.json"
-      script: "h = { message: { type: 'TextMessage', body: ARGF.read } }; puts h.to_json"
+      script: "puts Hash[ message: { type: 'TextMessage', body: ARGF.read.upcase } ].to_json"
     output:
       path: "/room/569461/live.json"
       script: "puts ARGF.read.upcase"
