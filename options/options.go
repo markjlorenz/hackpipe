@@ -4,7 +4,7 @@ import (
   "flag"
   "os"
   "io/ioutil"
-  "encoding/json"
+  "launchpad.net/goyaml"
 )
 
 type ApiOptions map[string]ApiOption
@@ -66,7 +66,7 @@ func Parse() (o *Options){
 }
 
 func unmarshalConfig(data []byte) (options *ApiOptions) {
-  err := json.Unmarshal(data, &options)
+  err := goyaml.Unmarshal(data, &options)
   if err != nil { panic(err) }
   return
 }

@@ -1,69 +1,49 @@
-{
-  "apis": {
+apis:
+  github:
+    auth: "Basic Nzc5ZDQ3Mzg2MjI0ZmZkODBlYTI5OWRkMzNjYzl<redacted>"
+    headers:
+      Content-Type: "application/json"
+    host: "api.github.com"
+    runner: "ruby -rjson"
+    input:
+      path: "/gists"
+      script: "j = JSON.parse(ARGF.read); j['description'] = j['description'].upcase; puts j.to_json"
+    output:
+      script: "j = JSON.parse(ARGF.read); puts j['url']"
 
-     "github": {
-       "auth": "Basic Nzc5ZDQ3Mzg2MjI0ZmZkODBlYTI5OWRkMzNjYzl<redacted>
-      ,"headers": {
-        "Content-Type": "application/json"
-      }
-      ,"host": "api.github.com"
-      ,"runner": "ruby -rjson"
+  campfire:
+    auth: "Basic YmE5NmYwYjZmMmNlYjk0MWRkZWFiYTg5YTJ<redacted>"
+    headers:
+      Content-Type: "application/json"
+    host: "streaming.campfirenow.com"
+    runner: "ruby -rjson"
+    input:
+      host: "innovapartners.campfirenow.com"
+      path: "/room/569461/speak.json"
+      script: "h = { message: { type: 'TextMessage', body: ARGF.read } }; puts h.to_json"
+    output:
+      path: "/room/569461/live.json"
+      script: "puts ARGF.read.upcase"
 
-      ,"input": {
-         "path": "/gists"
-        ,"script": "j = JSON.parse(ARGF.read); j['description'] = j['description'].upcase; puts j.to_json"
-      }
+  bin:
+    auth: "Basic YW55LWFwaS1pZDpkb2VzbnQtbWF0dGVy"
+    host: "thawing-hollows-6255.herokuapp.com"
+    runner: "ruby -rjson"
+    yolo: true
+    input:
+      path: "/14qedeo1"
+      query: "v=1"
+      method: "GET"
+      script: "File.open(ENV['QUERY'], 'a') { |q| q  << '&q=caremark&drug_id=001002' }"
+    output:
+      script: "puts ARGF.read.upcase"
 
-      ,"output": {
-         "script": "j = JSON.parse(ARGF.read); puts j['url']"
-      }
-    }
-
-    ,"campfire": {
-       "auth": "Basic YmE5NmYwYjZmMmNlYjk0MWRkZWFiYTg5YTJ<redacted>"
-      ,"headers": {
-        "Content-Type": "application/json"
-      }
-      ,"host": "streaming.campfirenow.com"
-      ,"runner": "ruby -rjson"
-      ,"input": {
-         "host": "innovapartners.campfirenow.com"
-        ,"path": "/room/569461/speak.json"
-        ,"script": "h = { message: { type: 'TextMessage', body: ARGF.read } }; puts h.to_json"
-      }
-      ,"output": {
-         "path": "/room/569461/live.json"
-        ,"script": "puts ARGF.read.upcase"
-      }
-    }
-
-    ,"bin": {
-       "auth": "Basic YW55LWFwaS1pZDpkb2VzbnQtbWF0dGVy"
-      ,"host": "thawing-hollows-6255.herokuapp.com"
-      ,"runner": "ruby -rjson"
-      ,"yolo": true
-      ,"input": {
-         "path": "/14qedeo1"
-        ,"query": "v=1"
-        ,"method": "GET"
-        ,"script": "File.open(ENV['QUERY'], 'a') { |q| q  << '&q=caremark&drug_id=001002' }"
-      }
-      ,"output": {
-         "script": "puts ARGF.read.upcase"
-      }
-    }
-
-    ,"covermymeds": {
-       "auth": "Basic YW55LWFwaS1pZDpkb2VzbnQtbWF0dGVy"
-      ,"host": "api.covermymeds.com"
-      ,"runner": "ruby -rjson"
-      ,"input": {
-         "path": "/drugs"
-        ,"query": "v=1"
-        ,"method": "GET"
-        ,"script": "File.open(ENV['QUERY'], 'a') { |q| q  << '&q=marinol' }"
-      }
-    }
-
-  }
-}
+  covermymeds:
+    auth: "Basic YW55LWFwaS1pZDpkb2VzbnQtbWF0dGVy"
+    host: "api.covermymeds.com"
+    runner: "ruby -rjson"
+    input:
+      path: "/drugs"
+      query: "v=1"
+      method: "GET"
+      script: "File.open(ENV['QUERY'], 'a') { |q| q  << '&q=marinol' }"
