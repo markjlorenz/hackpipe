@@ -17,6 +17,7 @@ func main() {
 
 func writer(opts *opts.Options) {
   writeOpts := &api.Opts{
+    Scheme:  opts.Input.Scheme,
     Path:    opts.Input.Path,
     Auth:    opts.Auth,
     Headers: opts.Headers,
@@ -43,10 +44,12 @@ func reader(opts *opts.Options) {
   if opts.Output.Path == "" { return }
 
   readOpts := &api.Opts{
+    Scheme:  opts.Output.Scheme,
     Path:    opts.Output.Path,
     Auth:    opts.Auth,
     Headers: opts.Headers,
     Host:    opts.Output.Host,
+    Method:  opts.Output.Method,
     Yolo:    opts.Yolo,
   }
   readable := api.NewOutput(readOpts)

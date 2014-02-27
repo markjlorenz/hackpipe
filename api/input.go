@@ -13,15 +13,16 @@ type Input struct {
 }
 
 func NewInput(opts *Opts) (*Input) {
-  path  := opts.Path
-  auth  := opts.Auth
-  host  := opts.Host
-  yolo  := opts.Yolo
-  head  := opts.Headers
-  meth  := opts.Method
-  query := opts.Query
+  scheme := opts.Scheme
+  path   := opts.Path
+  auth   := opts.Auth
+  host   := opts.Host
+  yolo   := opts.Yolo
+  head   := opts.Headers
+  meth   := opts.Method
+  query  := opts.Query
 
-  req, err := http.NewRequest(meth, "https://"+host+path, nil)
+  req, err := http.NewRequest(meth, scheme+"://"+host+path, nil)
   if err != nil { fmt.Println(req); panic(err) }
 
   req.Header.Add("Authorization", auth)

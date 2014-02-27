@@ -12,13 +12,15 @@ type Output struct {
 }
 
 func NewOutput(opts *Opts) *Output {
-  path := opts.Path
-  auth := opts.Auth
-  host := opts.Host
-  yolo := opts.Yolo
-  head := opts.Headers
+  scheme := opts.Scheme
+  path   := opts.Path
+  auth   := opts.Auth
+  host   := opts.Host
+  yolo   := opts.Yolo
+  head   := opts.Headers
+  meth   := opts.Method
 
-  req, err := http.NewRequest("GET", "https://"+host+path, nil)
+  req, err := http.NewRequest(meth, scheme+"://"+host+path, nil)
   if err != nil { fmt.Println(req); panic(err) }
 
   req.Header.Add("Authorization", auth)

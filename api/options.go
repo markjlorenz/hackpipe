@@ -1,6 +1,7 @@
 package api
 
 type Opts struct {
+  Scheme  string
   Path    string
   Auth    string
   Headers map[string]string

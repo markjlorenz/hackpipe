@@ -15,6 +15,7 @@ type Options struct {
   Runner  string
   Auth    string
   Host    string
+  Scheme  string
   Yolo    bool
   Headers map[string]string
   Input   ioOptions
@@ -22,6 +23,7 @@ type Options struct {
 }
 
 type ioOptions struct {
+  Scheme  string // overrides the top level scheme
   Host    string // overrides the top level host
   Runner  string // overrides the top level runner
   Path    string
@@ -56,9 +58,11 @@ func Parse() (o *Options){
   o   = &op
 
   // defaults
-  if o.Input.Method == "" { o.Input.Method = "POST" }
+  if o.Input.Method  == "" { o.Input.Method  = "POST" }
+  if o.Output.Method == "" { o.Output.Method = "GET" }
+  if o.Scheme        == "" { o.Scheme        = "https" }
 
-  // user overrides
+  // commandline overrides
   if inScript     != "" { o.Input.Script  = inScript }
   if outScript    != "" { o.Output.Script = outScript }
   if runner       != "" { o.Runner        = runner }
@@ -70,6 +74,8 @@ func Parse() (o *Options){
   if o.Output.Host   == "" { o.Output.Host = o.Host }
   if o.Input.Runner  == "" { o.Input.Runner  = o.Runner }
   if o.Output.Runner == "" { o.Output.Runner = o.Runner }
+  if o.Input.Scheme  == "" { o.Input.Scheme  = o.Scheme }
+  if o.Output.Scheme == "" { o.Output.Scheme = o.Scheme }
 
   return
 }
