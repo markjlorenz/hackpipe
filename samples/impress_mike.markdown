@@ -17,7 +17,7 @@ brew install terminal-notifier
 hackpipe -a=campfire -o="puts JSON.parse(ARGF.read)['body']" | grep --line-buffered -i 'mark' | while read line; do terminal-notifier -message "$line"; done
 ```
 
-## In combination with JQ
+## In combination with jq
 [jq](http://stedolan.github.io/jq/manual/#Invokingjq) is a great program for working with JSON data.  I frequently use it to pretty-print with its `.` filter
 
 In your `~/.hackpiperc`
