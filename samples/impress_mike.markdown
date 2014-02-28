@@ -16,3 +16,13 @@ brew install terminal-notifier
 ```bash
 hackpipe -a=campfire -o="puts JSON.parse(ARGF.read)['body']" | grep --line-buffered -i 'mark' | while read line; do terminal-notifier -message "$line"; done
 ```
+
+## In combination with JQ
+[jq](http://stedolan.github.io/jq/manual/#Invokingjq) is a great program for working with JSON data.  I frequently use it to pretty-print with its `.` filter
+
+In your `~/.hackpiperc`
+```
+  output:
+    runner: "jq -C -f "
+    script: "."
+```
