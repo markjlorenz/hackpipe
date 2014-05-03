@@ -64,16 +64,11 @@ func Parse() (o *Options){
   alternates := unmarshalAlternates(rcBytes)
   fullOpts   := (*baseOpts)["apis"]
 
-  for _, alternate := range (*alternates)["alternates"] {
-    alternateRcBytes := loadRcFile(alternate)
-    alternateOpts    := unmarshalConfig(alternateRcBytes)
-    if alternateOpts == nil { panic("An `apis` section is required in "+alternate) }
-    for api_name, api_value := range (*alternateOpts)["apis"] {
-      _, already_defined := fullOpts[api_name]
-      if already_defined { panic("Already defined api "+api_name) }
-      fullOpts[api_name] = api_value
-    }
-  }
+  loadAlternates(alternates, func(api_name string, api_value Options){
+    _, already_defined := fullOpts[api_name]
+    if already_defined { panic("Already defined api "+api_name) }
+    fullOpts[api_name] = api_value
+  })
 
   op := fullOpts[api]
   o   = &op
@@ -126,6 +121,17 @@ func loadRcFile(fileWithPath string) []byte {
   if err != nil { panic(err) }
 
   return rcBytes
+}
+
+func loadAlternates(alternates *ApiAlternates, addAlternate func(api_name string, api_value Options)) {
+  for _, alternate := range (*alternates)["alternates"] {
+    alternateRcBytes := loadRcFile(alternate)
+    alternateOpts    := unmarshalConfig(alternateRcBytes)
+    if alternateOpts == nil { panic("An `apis` section is required in "+alternate) }
+    for api_name, api_value := range (*alternateOpts)["apis"] {
+      addAlternate(api_name, api_value)
+    }
+  }
 }
 
 func assertRequired(reqd string) {
