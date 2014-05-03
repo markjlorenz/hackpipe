@@ -13,7 +13,7 @@ There is a sample `~/.hackpiperc` included in the `sample` directory.  This shou
 
 The top level `apis` key holds a hash of each api you wish to configure.  The top level `alternates` is an array of alternate config files.  This is to make it easy to have one api config per file.  For example:
 
-```
+```yaml
 alternates:
  - ".hackpipe/campfire.yaml"  # A config file for the campfire API
 apis:
