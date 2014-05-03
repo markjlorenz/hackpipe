@@ -6,13 +6,15 @@ import (
   "io/ioutil"
   "fmt"
   "strings"
+  "path"
   "launchpad.net/goyaml"
 )
 
 type ApiOptions map[string]ApiOption
 type ApiOption map[string]Options
-
 type ApiAlternates map[string][]string
+
+var ConfFile string
 
 type Options struct {
   API     string
@@ -37,6 +39,8 @@ type ioOptions struct {
 }
 
 func Parse() (o *Options){
+  ConfFile = os.Getenv("HOME")+"/.hackpiperc"
+
   // flag.Usage = usage
   var api           string
   var listAPIs      bool
@@ -55,7 +59,7 @@ func Parse() (o *Options){
   flag.StringVar(&outputRunner, "ro", outputRunner, "The same as '-r', but only applied to output")
   flag.Parse()
 
-  rcBytes    := loadRcFile(os.Getenv("HOME")+"/.hackpiperc")
+  rcBytes    := loadRcFile(ConfFile)
   baseOpts   := unmarshalConfig(rcBytes)
   alternates := unmarshalAlternates(rcBytes)
   fullOpts   := (*baseOpts)["apis"]
@@ -63,6 +67,7 @@ func Parse() (o *Options){
   for _, alternate := range (*alternates)["alternates"] {
     alternateRcBytes := loadRcFile(alternate)
     alternateOpts    := unmarshalConfig(alternateRcBytes)
+    if alternateOpts == nil { panic("An `apis` section is required in "+alternate) }
     for api_name, api_value := range (*alternateOpts)["apis"] {
       _, already_defined := fullOpts[api_name]
       if already_defined { panic("Already defined api "+api_name) }
@@ -112,6 +117,7 @@ func unmarshalAlternates(data []byte) (options *ApiAlternates) {
 }
 
 func loadRcFile(fileWithPath string) []byte {
+  os.Chdir(path.Dir(ConfFile))
   rcFile, noRc := os.Open(fileWithPath)
   if noRc != nil { panic("a `"+fileWithPath+"` file is needed.") }
   defer rcFile.Close()
