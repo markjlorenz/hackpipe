@@ -37,7 +37,7 @@ type ioOptions struct {
 func Parse() (o *Options){
   // flag.Usage = usage
   var api           string
-  var availableAPIs bool
+  var listAPIs      bool
   var inScript      string
   var outScript     string
   var runner        string
@@ -45,7 +45,7 @@ func Parse() (o *Options){
   var outputRunner  string
 
   flag.StringVar(&api, "a", api, "The API to access")
-  flag.BoolVar(&availableAPIs, "aa", availableAPIs, "List available APIs and exit")
+  flag.BoolVar(&listAPIs, "aa", listAPIs, "List available APIs and exit")
   flag.StringVar(&inScript, "i", inScript, "A script to pre-process the api input")
   flag.StringVar(&outScript, "o", outScript, "A script to process the api output")
   flag.StringVar(&runner, "r", runner, "The program that runs your scripts.  The data will be availble on STDIN.")
@@ -70,7 +70,7 @@ func Parse() (o *Options){
   op := fullOpts[api]
   o   = &op
 
-  if availableAPIs { listApis(fullOpts) }
+  if listAPIs { printAPIs(fullOpts) }
   assertRequired(api)
 
   // defaults
@@ -120,7 +120,7 @@ func assertRequired(reqd string) {
   }
 }
 
-func listApis(fullOpts ApiOption) {
+func printAPIs(fullOpts ApiOption) {
   var keys []string
   for k := range fullOpts {
     keys = append(keys, k)
