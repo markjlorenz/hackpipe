@@ -15,7 +15,7 @@ The top level `apis` key holds a hash of each api you wish to configure.  The to
 
 ```yaml
 alternates:
- - ".hackpipe/campfire.yaml"  # A config file for the campfire API
+ - ".hackpipe/campfire.yaml"  # A config file for the campfire API.  Paths are relative to `$HOME`
 apis:
  github:
   # Config for the github API
