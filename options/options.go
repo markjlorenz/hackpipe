@@ -12,6 +12,8 @@ import (
 type ApiOptions map[string]ApiOption
 type ApiOption map[string]Options
 
+type ApiAlternates map[string][]string
+
 type Options struct {
   API     string
   Runner  string
@@ -53,12 +55,13 @@ func Parse() (o *Options){
   flag.StringVar(&outputRunner, "ro", outputRunner, "The same as '-r', but only applied to output")
   flag.Parse()
 
-  rcBytes  := loadJSON(os.Getenv("HOME")+"/.hackpiperc")
-  baseOpts := unmarshalConfig(rcBytes)
-  fullOpts := (*baseOpts)["apis"]
+  rcBytes    := loadRcFile(os.Getenv("HOME")+"/.hackpiperc")
+  baseOpts   := unmarshalConfig(rcBytes)
+  alternates := unmarshalAlternates(rcBytes)
+  fullOpts   := (*baseOpts)["apis"]
 
-  for alternate := range (*baseOpts)["alternates"] {
-    alternateRcBytes := loadJSON(alternate)
+  for _, alternate := range (*alternates)["alternates"] {
+    alternateRcBytes := loadRcFile(alternate)
     alternateOpts    := unmarshalConfig(alternateRcBytes)
     for api_name, api_value := range (*alternateOpts)["apis"] {
       _, already_defined := fullOpts[api_name]
@@ -102,9 +105,15 @@ func unmarshalConfig(data []byte) (options *ApiOptions) {
   return
 }
 
-func loadJSON(fileWithPath string) []byte {
+func unmarshalAlternates(data []byte) (options *ApiAlternates) {
+  err := goyaml.Unmarshal(data, &options)
+  if err != nil { panic(err) }
+  return
+}
+
+func loadRcFile(fileWithPath string) []byte {
   rcFile, noRc := os.Open(fileWithPath)
-  if noRc != nil { panic("a `#{fileWithPath}` file is needed.") }
+  if noRc != nil { panic("a `"+fileWithPath+"` file is needed.") }
   defer rcFile.Close()
 
   rcBytes, err := ioutil.ReadAll(rcFile)
