@@ -9,7 +9,19 @@
  - Copy `samples/.hackpiperc` to `$HOME/.hackpiperc` and modify it for your APIs
 
 ## `~/.hackpiperc`
-There is a sample `~/.hackpiperc` included in the `sample` directory.  This should give you a really good overview of what configuration options are availbe to you.
+There is a sample `~/.hackpiperc` included in the `sample` directory.  This should give you a really good overview of what configuration options are available to you.
+
+The top level `apis` key holds a hash of each api you wish to configure.  The top level `alternates` is an array of alternate config files.  This is to make it easy to have one api config per file.  For example:
+
+```
+alternates:
+ - ".hackpipe/campfire.yaml"  # A config file for the campfire API
+apis:
+ github:
+  # Config for the github API
+```
+
+The "alternate" config files have the same schema as `.hackpiperc`, except they do not support alternates.
 
 ## Examples
 These examples assume you are using the sample `.hackpiperc`
